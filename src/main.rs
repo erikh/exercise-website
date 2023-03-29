@@ -36,7 +36,9 @@ async fn serve(
         None => REACT_APP.get_file(INDEX_FILE).unwrap(),
     };
 
-    let body = Body::from(file.contents_utf8().unwrap());
+    info!("Fetching file: {}", path);
+
+    let body = Body::from(file.contents());
     Ok((
         req,
         Some(Response::builder().status(200).body(body).unwrap()),
