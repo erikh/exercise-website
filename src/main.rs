@@ -14,7 +14,7 @@ async fn serve(
     _state: NoState,
 ) -> HTTPResult<NoState> {
     let path = match params.get("*") {
-        Some(path) => &path,
+        Some(path) => path,
         None => INDEX_FILE,
     };
 
