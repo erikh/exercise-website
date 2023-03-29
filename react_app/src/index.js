@@ -10,10 +10,12 @@ import CssBaseline from "@mui/material/CssBaseline";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
+import Root from "./pages/root";
+
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <div>Hello, world!</div>,
+    element: <Root />,
   },
 ]);
 

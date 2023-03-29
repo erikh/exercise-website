@@ -1,6 +1,6 @@
 use davisjr::prelude::*;
 use include_dir::{include_dir, Dir};
-use tracing::{info, Level};
+use tracing::{debug, info, Level};
 use tracing_subscriber::FmtSubscriber;
 
 static REACT_APP: Dir = include_dir!("react_app/build");
@@ -36,7 +36,7 @@ async fn serve(
         None => REACT_APP.get_file(INDEX_FILE).unwrap(),
     };
 
-    info!("Fetching file: {}", path);
+    debug!("Fetching file: {}", path);
 
     let body = Body::from(file.contents());
     Ok((
