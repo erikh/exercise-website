@@ -43,5 +43,5 @@ async fn main() -> Result<(), ServerError> {
 
     let mut app = App::new();
     app.get("/*", compose_handler!(serve)).unwrap();
-    app.serve("127.0.0.1:3000").await
+    app.serve("0.0.0.0:3000").await
 }
