@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-davisjr = { version = "*", features = ["logging", "tracing"] }
+davisjr = { version = "*", features = ["tracing"] }
 include_dir = "*"
 tokio = "*"
 tracing = "*"
