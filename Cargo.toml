@@ -7,7 +7,9 @@ edition = "2021"
 
 [dependencies]
 davisjr = { version = "*", features = ["tracing"] }
+sqlx = { version = "*", features = [ "runtime-tokio-rustls", "sqlite", "macros", "uuid", "time", "bigdecimal", "tls" ] }
+tokio = { version = "*", features = [ "full" ] }
 include_dir = "*"
-tokio = "*"
 tracing = "*"
 tracing-subscriber = "*"
+anyhow = "^1"
