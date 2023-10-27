@@ -10,8 +10,9 @@ use tracing::{debug, info, Level};
 use tracing_subscriber::FmtSubscriber;
 
 static REACT_APP: Dir = include_dir!("react_app/build");
-static DB_MIGRATIONS: Dir = include_dir!("./migrations");
 const INDEX_FILE: &str = "index.html";
+
+static DB_MIGRATIONS: Dir = include_dir!("./migrations");
 const DB_FILENAME: &str = "exercise.db";
 
 #[derive(Debug, Clone)]
