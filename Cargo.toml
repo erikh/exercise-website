@@ -16,3 +16,14 @@ tracing-subscriber = "*"
 anyhow = "^1"
 futures = "*"
 http = "*"
+hyper = { version = "*", features = [ "stream" ] }
+serde = "*"
+serde_derive = "*"
+serde_json = "*"
+chrono = { version = "*", features = [ "serde" ] }
+
+[profile.release]
+strip = true
+lto = true
+codegen-units = 48
+opt-level = 3

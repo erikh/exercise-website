@@ -1,6 +1,7 @@
+mod db;
 mod migrations;
 
-use self::migrations::Migrations;
+use self::{db::Exercise, migrations::Migrations};
 use anyhow::Result;
 use davisjr::prelude::*;
 use include_dir::{include_dir, Dir};
@@ -68,6 +69,30 @@ async fn serve_files(
     ))
 }
 
+async fn post_exercise(
+    mut req: Request<Body>,
+    _resp: Option<Response<Body>>,
+    _params: Params,
+    app: App<AppState, NoState>,
+    _state: NoState,
+) -> HTTPResult<NoState> {
+    let exercise: Exercise = serde_json::from_slice(&hyper::body::to_bytes(req.body_mut()).await?)?;
+
+    sqlx::query!(
+        "insert into exercises (id, name) values (?, ?)",
+        exercise.id,
+        exercise.name
+    )
+    .execute(&app.state().await.unwrap().lock().await.db.clone().unwrap())
+    .await?;
+
+    Ok((
+        req,
+        Some(Response::builder().status(200).body(Body::empty()).unwrap()),
+        NoState {},
+    ))
+}
+
 #[tokio::main]
 async fn main() -> Result<(), ServerError> {
     let subscriber = FmtSubscriber::builder()
@@ -80,6 +105,7 @@ async fn main() -> Result<(), ServerError> {
         .await
         .map_err(|x| ServerError::from(format!("{}", x)))?;
     let mut app = App::with_state(state);
-    app.get("/*", compose_handler!(serve_files)).unwrap();
+    app.post("/input/exercise", compose_handler!(post_exercise))?;
+    app.get("/*", compose_handler!(serve_files))?;
     app.serve("0.0.0.0:3000").await
 }
