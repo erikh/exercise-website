@@ -1,11 +1,10 @@
+mod migrations;
+
+use self::migrations::Migrations;
 use anyhow::Result;
 use davisjr::prelude::*;
 use include_dir::{include_dir, Dir};
-use sqlx::{
-    migrate::{MigrateDatabase, MigrationSource, MigrationType},
-    Sqlite, SqlitePool,
-};
-use std::borrow::Cow;
+use sqlx::{migrate::MigrateDatabase, Sqlite, SqlitePool};
 use tracing::{debug, info, Level};
 use tracing_subscriber::FmtSubscriber;
 
@@ -14,53 +13,6 @@ const INDEX_FILE: &str = "index.html";
 
 static DB_MIGRATIONS: Dir = include_dir!("./migrations");
 const DB_FILENAME: &str = "exercise.db";
-
-#[derive(Debug, Clone)]
-struct Migrations<'a>(Dir<'a>);
-
-impl<'s> MigrationSource<'s> for Migrations<'s> {
-    fn resolve(
-        self,
-    ) -> futures::future::BoxFuture<
-        's,
-        std::result::Result<Vec<sqlx::migrate::Migration>, sqlx::error::BoxDynError>,
-    > {
-        let s = self.clone();
-
-        Box::pin(async move {
-            let contents =
-                s.0.files()
-                    .map(|x| x.contents_utf8().unwrap().to_string().clone())
-                    .collect::<Vec<String>>();
-
-            let filenames =
-                s.0.files()
-                    .map(|x| {
-                        x.path()
-                            .as_os_str()
-                            .clone()
-                            .to_str()
-                            .unwrap()
-                            .to_string()
-                            .clone()
-                    })
-                    .collect::<Vec<String>>();
-
-            let mut v = Vec::new();
-            let mut i: usize = 0;
-            for s in contents {
-                v.push(sqlx::migrate::Migration::new(
-                    i.try_into().unwrap(),
-                    Cow::Owned(filenames[i].clone()),
-                    MigrationType::Simple,
-                    Cow::Owned(s.clone()),
-                ));
-                i += 1;
-            }
-            Ok(v)
-        })
-    }
-}
 
 #[derive(Debug, Clone, Default)]
 #[allow(dead_code)]
