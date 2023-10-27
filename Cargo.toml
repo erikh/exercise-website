@@ -6,6 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+dotenv = "*"
 davisjr = { version = "*", features = ["tracing"] }
 sqlx = { version = "*", features = [ "runtime-tokio-rustls", "sqlite", "macros", "uuid", "time", "bigdecimal", "tls" ] }
 tokio = { version = "*", features = [ "full" ] }
@@ -13,3 +14,4 @@ include_dir = "*"
 tracing = "*"
 tracing-subscriber = "*"
 anyhow = "^1"
+futures = "*"

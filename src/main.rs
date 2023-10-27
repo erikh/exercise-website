@@ -1,13 +1,65 @@
 use anyhow::Result;
 use davisjr::prelude::*;
 use include_dir::{include_dir, Dir};
-use sqlx::{migrate::MigrateDatabase, Sqlite, SqlitePool};
+use sqlx::{
+    migrate::{MigrateDatabase, MigrationSource, MigrationType},
+    Sqlite, SqlitePool,
+};
+use std::borrow::Cow;
 use tracing::{debug, info, Level};
 use tracing_subscriber::FmtSubscriber;
 
 static REACT_APP: Dir = include_dir!("react_app/build");
+static DB_MIGRATIONS: Dir = include_dir!("./migrations");
 const INDEX_FILE: &str = "index.html";
 const DB_FILENAME: &str = "exercise.db";
+
+#[derive(Debug, Clone)]
+struct Migrations<'a>(Dir<'a>);
+
+impl<'s> MigrationSource<'s> for Migrations<'s> {
+    fn resolve(
+        self,
+    ) -> futures::future::BoxFuture<
+        's,
+        std::result::Result<Vec<sqlx::migrate::Migration>, sqlx::error::BoxDynError>,
+    > {
+        let s = self.clone();
+
+        Box::pin(async move {
+            let contents =
+                s.0.files()
+                    .map(|x| x.contents_utf8().unwrap().to_string().clone())
+                    .collect::<Vec<String>>();
+
+            let filenames =
+                s.0.files()
+                    .map(|x| {
+                        x.path()
+                            .as_os_str()
+                            .clone()
+                            .to_str()
+                            .unwrap()
+                            .to_string()
+                            .clone()
+                    })
+                    .collect::<Vec<String>>();
+
+            let mut v = Vec::new();
+            let mut i: usize = 0;
+            for s in contents {
+                v.push(sqlx::migrate::Migration::new(
+                    i.try_into().unwrap(),
+                    Cow::Owned(filenames[i].clone()),
+                    MigrationType::Simple,
+                    Cow::Owned(s.clone()),
+                ));
+                i += 1;
+            }
+            Ok(v)
+        })
+    }
+}
 
 #[derive(Debug, Clone, Default)]
 #[allow(dead_code)]
@@ -22,9 +74,12 @@ impl AppState {
             _ => {}
         }
 
-        Ok(Self {
-            db: Some(SqlitePool::connect(&url).await?),
-        })
+        let db = SqlitePool::connect(&url).await?;
+        sqlx::migrate::Migrator::new(Migrations(DB_MIGRATIONS.clone()))
+            .await?
+            .run(&db)
+            .await?;
+        Ok(Self { db: Some(db) })
     }
 }
 
