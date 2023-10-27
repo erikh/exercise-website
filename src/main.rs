@@ -5,7 +5,7 @@ use anyhow::Result;
 use davisjr::prelude::*;
 use include_dir::{include_dir, Dir};
 use sqlx::{migrate::MigrateDatabase, Sqlite, SqlitePool};
-use tracing::{debug, info, Level};
+use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
 
 static REACT_APP: Dir = include_dir!("react_app/build");
@@ -42,37 +42,23 @@ impl TransientState for AppState {
     }
 }
 
-async fn log_serve(
-    req: Request<Body>,
-    _resp: Option<Response<Body>>,
-    _params: Params,
-    _app: App<AppState, NoState>,
-    _state: NoState,
-) -> HTTPResult<NoState> {
-    let path = req.uri().path();
-    info!("Requesting: {}", path);
-
-    Ok((req, None, NoState {}))
-}
-
-async fn serve(
+async fn serve_files(
     req: Request<Body>,
     _resp: Option<Response<Body>>,
     params: Params,
     _app: App<AppState, NoState>,
     _state: NoState,
 ) -> HTTPResult<NoState> {
-    let path = match params.get("*") {
-        Some(path) => path,
-        None => INDEX_FILE,
-    };
+    let path = params.get("*");
 
-    let file = match REACT_APP.get_file(path) {
-        Some(file) => file,
-        None => REACT_APP.get_file(INDEX_FILE).unwrap(),
+    let file = if let Some(path) = path {
+        match REACT_APP.get_file(path) {
+            Some(file) => file,
+            None => REACT_APP.get_file(INDEX_FILE).unwrap(),
+        }
+    } else {
+        REACT_APP.get_file(INDEX_FILE).unwrap()
     };
-
-    debug!("Fetching file: {}", path);
 
     let body = Body::from(file.contents());
     Ok((
@@ -94,6 +80,6 @@ async fn main() -> Result<(), ServerError> {
         .await
         .map_err(|x| ServerError::from(format!("{}", x)))?;
     let mut app = App::with_state(state);
-    app.get("/*", compose_handler!(log_serve, serve)).unwrap();
+    app.get("/*", compose_handler!(serve_files)).unwrap();
     app.serve("0.0.0.0:3000").await
 }
