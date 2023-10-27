@@ -1,7 +1,7 @@
 use anyhow::Result;
 use davisjr::prelude::*;
 use include_dir::{include_dir, Dir};
-use sqlx::SqlitePool;
+use sqlx::{migrate::MigrateDatabase, Sqlite, SqlitePool};
 use tracing::{debug, info, Level};
 use tracing_subscriber::FmtSubscriber;
 
@@ -17,9 +17,13 @@ struct AppState {
 
 impl AppState {
     async fn new(db: &str) -> Result<Self> {
-        // FIXME create db if necessary
+        let url = format!("sqlite://{}", db);
+        match Sqlite::create_database(&url).await {
+            _ => {}
+        }
+
         Ok(Self {
-            db: Some(SqlitePool::connect(&format!("sqlite://{}", db)).await?),
+            db: Some(SqlitePool::connect(&url).await?),
         })
     }
 }
