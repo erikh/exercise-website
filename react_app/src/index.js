@@ -23,15 +23,6 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <CssBaseline />
-    <div
-      style={{
-        marginTop: "25%",
-        marginBottom: "25%",
-        marginLeft: "25%",
-        marginRight: "25%",
-      }}
-    >
-      <RouterProvider router={router} />
-    </div>
+    <RouterProvider router={router} />
   </React.StrictMode>
 );
