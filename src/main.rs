@@ -78,8 +78,7 @@ async fn post_exercise(
 ) -> HTTPResult<NoState> {
     let exercise: Exercise = serde_json::from_slice(&hyper::body::to_bytes(req.body_mut()).await?)?;
 
-    sqlx::query("insert into exercises (id, name) values (?, ?)")
-        .bind(exercise.id)
+    sqlx::query("insert into exercises (name) values (?)")
         .bind(exercise.name)
         .execute(&app.state().await.unwrap().lock().await.db.clone().unwrap())
         .await?;

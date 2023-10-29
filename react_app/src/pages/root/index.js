@@ -14,8 +14,16 @@ import ListItemText from "@mui/material/ListItemText";
 import ReorderIcon from "@mui/icons-material/Reorder";
 import AddIcon from "@mui/icons-material/Add";
 
-function submitExercise() {
-  alert("submitting");
+async function submitExercise() {
+  let form = document.getElementById("enter_exercise");
+  for (var i = 0; i < form.length; i++) {
+    if (form.elements[i].name === "name") {
+      await fetch("/input/exercise", {
+        method: "POST",
+        body: JSON.stringify({ name: form.elements[i].value }),
+      });
+    }
+  }
 }
 
 export default function Root() {
@@ -51,17 +59,19 @@ export default function Root() {
         }}
       >
         <Box sx={{ flexGrow: 1 }}>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <InputLabel>Exercise Name</InputLabel>
+          <form id="enter_exercise" action={false}>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <InputLabel>Exercise Name</InputLabel>
+              </Grid>
+              <Grid item xs={6}>
+                <Input name="name" size="30em" />
+              </Grid>
+              <Grid item xs={12}>
+                <Button onClick={() => submitExercise()}>Submit</Button>
+              </Grid>
             </Grid>
-            <Grid item xs={6}>
-              <Input name="name" size="30em" />
-            </Grid>
-            <Grid item xs={12}>
-              <Button onClick={submitExercise}>Submit</Button>
-            </Grid>
-          </Grid>
+          </form>
         </Box>
       </div>
     </React.Fragment>
