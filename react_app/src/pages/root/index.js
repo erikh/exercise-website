@@ -16,7 +16,7 @@ export default function Root() {
           <InputLabel>Exercise Name</InputLabel>
         </Grid>
         <Grid item xs={6}>
-          <Input name={"name"} size={"30em"} />
+          <Input name="name" size="30em" />
         </Grid>
         <Grid item xs={12}>
           <Button onClick={submitExercise}>Submit</Button>
