@@ -27,8 +27,7 @@ async function submitExercise(setState) {
         });
 
         if (response.status !== 200) {
-          // FIXME figure out reading the body later
-          setState({ error: "There was an error in the form" });
+          setState({ error: await new Response(response.body).text() });
         }
       } catch (error) {
         setState({ error: error.message });
