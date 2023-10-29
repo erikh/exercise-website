@@ -19,7 +19,7 @@ export default function Root() {
           <Input name={"name"} size={"30em"} />
         </Grid>
         <Grid item xs={12}>
-          <Button onClick={() => submitExercise()}>Submit</Button>
+          <Button onClick={submitExercise}>Submit</Button>
         </Grid>
       </Grid>
     </Box>
