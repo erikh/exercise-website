@@ -12,6 +12,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Alert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
 import ReorderIcon from "@mui/icons-material/Reorder";
 import AddIcon from "@mui/icons-material/Add";
 
@@ -40,26 +41,16 @@ export default function Root() {
   const [state, setState] = React.useState({
     open: true,
     error: null,
-    error_timeout: null,
   });
 
-  let now = new Date();
-
-  if (state["error"]) {
-    if (state["error_timeout"]) {
-      if (now.getTime() > state["error_timeout"]) {
-        setState({ error: null, error_timeout: null });
-      }
-    } else {
-      setState({
-        error: state["error"],
-        error_timeout: now.getTime() + 300000,
-      });
-    }
-  }
-
   let error = state["error"] ? (
-    <Alert severity="error">{state["error"]}</Alert>
+    <Snackbar
+      open={true}
+      autoHideDuration={5000}
+      onClose={() => setState({ error: null })}
+    >
+      <Alert severity="error">{state["error"]}</Alert>
+    </Snackbar>
   ) : (
     <React.Fragment />
   );
