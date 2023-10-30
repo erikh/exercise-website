@@ -16,6 +16,10 @@ import Snackbar from "@mui/material/Snackbar";
 import ReorderIcon from "@mui/icons-material/Reorder";
 import AddIcon from "@mui/icons-material/Add";
 
+async function submitReps(setState) {
+  alert("Submitted Reps");
+}
+
 async function submitExercise(setState) {
   let form = document.getElementById("enter_exercise");
   for (var i = 0; i < form.length; i++) {
@@ -38,7 +42,9 @@ async function submitExercise(setState) {
 
 export default function Root() {
   const [state, setState] = React.useState({
-    open: true,
+    open_menu: false,
+    open_new_exercise: false,
+    open_new_reps: true,
     error: null,
   });
 
@@ -59,19 +65,43 @@ export default function Root() {
       {error}
       <IconButton>
         <ReorderIcon
-          style={{ visibility: !state["open"] ? "visible" : "hidden" }}
-          onClick={() => setState({ open: true })}
+          style={{ visibility: !state["open_menu"] ? "visible" : "hidden" }}
+          onClick={() => setState({ open_menu: true })}
         />
       </IconButton>
-      <Drawer anchor="left" open={state["open"]}>
+      <Drawer anchor="left" open={state["open_menu"]}>
         <Box>
           <List>
             <ListItem>
-              <ListItemButton onClick={() => setState({ open: false })}>
+              <ListItemButton
+                onClick={() =>
+                  setState({
+                    open_menu: false,
+                    open_new_exercise: true,
+                    open_new_reps: false,
+                  })
+                }
+              >
                 <ListItemIcon>
                   <AddIcon />
                 </ListItemIcon>
                 <ListItemText primary="New Exercise" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem>
+              <ListItemButton
+                onClick={() =>
+                  setState({
+                    open_menu: false,
+                    open_new_reps: true,
+                    open_new_exercise: false,
+                  })
+                }
+              >
+                <ListItemIcon>
+                  <AddIcon />
+                </ListItemIcon>
+                <ListItemText primary="New Reps" />
               </ListItemButton>
             </ListItem>
           </List>
@@ -86,19 +116,48 @@ export default function Root() {
         }}
       >
         <Box sx={{ flexGrow: 1 }}>
-          <form id="enter_exercise" action={false}>
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <InputLabel>Exercise Name</InputLabel>
+          {state["open_new_exercise"] ? (
+            <form id="enter_exercise" action={false}>
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <InputLabel>Exercise Name</InputLabel>
+                </Grid>
+                <Grid item xs={6}>
+                  <Input name="name" size="30em" />
+                </Grid>
+                <Grid item xs={12}>
+                  <Button onClick={() => submitExercise(setState)}>
+                    Submit
+                  </Button>
+                </Grid>
               </Grid>
-              <Grid item xs={6}>
-                <Input name="name" size="30em" />
+            </form>
+          ) : (
+            <React.Fragment />
+          )}
+          {state["open_new_reps"] ? (
+            <form id="enter_reps" action={false}>
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <InputLabel>Exercise</InputLabel>
+                </Grid>
+                <Grid item xs={6}>
+                  <Input name="exercise_id" size="30em" />
+                </Grid>
+                <Grid item xs={6}>
+                  <InputLabel>Reps</InputLabel>
+                </Grid>
+                <Grid item xs={6}>
+                  <Input name="reps" size="30em" />
+                </Grid>
+                <Grid item xs={12}>
+                  <Button onClick={() => submitReps(setState)}>Submit</Button>
+                </Grid>
               </Grid>
-              <Grid item xs={12}>
-                <Button onClick={() => submitExercise(setState)}>Submit</Button>
-              </Grid>
-            </Grid>
-          </form>
+            </form>
+          ) : (
+            <React.Fragment />
+          )}
         </Box>
       </div>
     </React.Fragment>
