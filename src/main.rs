@@ -80,7 +80,7 @@ async fn post_exercise(
 
     sqlx::query("insert into exercises (name) values (?)")
         .bind(exercise.name)
-        .execute(&app.state().await.unwrap().lock().await.db.clone().unwrap())
+        .execute(&get_db(&app).await)
         .await?;
 
     Ok((
@@ -88,6 +88,10 @@ async fn post_exercise(
         Some(Response::builder().status(200).body(Body::empty()).unwrap()),
         NoState {},
     ))
+}
+
+async fn get_db(app: &App<AppState, NoState>) -> SqlitePool {
+    app.state().await.unwrap().lock().await.db.clone().unwrap()
 }
 
 #[tokio::main]
