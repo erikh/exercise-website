@@ -32,6 +32,8 @@ async function submitExercise(setState) {
 
         if (response.status !== 200) {
           setState({ error: await new Response(response.body).text() });
+        } else {
+          setState({ success: true });
         }
       } catch (error) {
         setState({ error: error.message });
@@ -46,6 +48,7 @@ export default function Root() {
     open_new_exercise: false,
     open_new_reps: true,
     error: null,
+    success: false,
   });
 
   let error = state["error"] ? (
@@ -60,9 +63,22 @@ export default function Root() {
     <React.Fragment />
   );
 
+  let success = state["success"] ? (
+    <Snackbar
+      open={true}
+      autoHideDuration={5000}
+      onClose={() => setState({ success: false })}
+    >
+      <Alert>Success!</Alert>
+    </Snackbar>
+  ) : (
+    <React.Fragment />
+  );
+
   return (
     <React.Fragment>
       {error}
+      {success}
       <IconButton>
         <ReorderIcon
           style={{ visibility: !state["open_menu"] ? "visible" : "hidden" }}
