@@ -36,6 +36,31 @@ pub(crate) async fn serve_files(
     ))
 }
 
+pub(crate) async fn list_exercises(
+    req: Request<Body>,
+    _resp: Option<Response<Body>>,
+    _params: Params,
+    app: App<AppState, NoState>,
+    _state: NoState,
+) -> HTTPResult<NoState> {
+    let exercises: Vec<Exercise> = sqlx::query_as("select id, name from exercises order by id")
+        .fetch_all(&get_db(&app).await)
+        .await?;
+
+    let body = serde_json::to_string(&exercises)?;
+
+    Ok((
+        req,
+        Some(
+            Response::builder()
+                .status(200)
+                .body(Body::from(hyper::body::to_bytes(body).await?))
+                .unwrap(),
+        ),
+        NoState {},
+    ))
+}
+
 pub(crate) async fn post_exercise(
     mut req: Request<Body>,
     _resp: Option<Response<Body>>,

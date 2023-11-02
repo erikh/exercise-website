@@ -11,10 +11,22 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import MenuItem from "@mui/material/MenuItem";
 import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
+import Select from "@mui/material/Select";
 import ReorderIcon from "@mui/icons-material/Reorder";
 import AddIcon from "@mui/icons-material/Add";
+
+let exercises = await getExercises();
+
+async function getExercises() {
+  return await fetch("/exercises").then((r) => r.json());
+}
+
+async function fakegetExercises() {
+  return [{ id: 1, name: "exercise #1" }];
+}
 
 async function submitReps(setState) {
   alert("Submitted Reps");
@@ -34,6 +46,7 @@ async function submitExercise(setState) {
           setState({ error: await new Response(response.body).text() });
         } else {
           setState({ success: true });
+          exercises = await getExercises();
         }
       } catch (error) {
         setState({ error: error.message });
@@ -50,6 +63,25 @@ export default function Root() {
     error: null,
     success: false,
   });
+
+  let exercise_list = (
+    <Select
+      displayEmpty={true}
+      id="exercise_id"
+      value={exercises.length > 0 ? exercises[0].id : ""}
+      autoWidth={true}
+    >
+      {exercises ? (
+        exercises.map((e) => (
+          <MenuItem key={e.id} value={e.id}>
+            {e.name}
+          </MenuItem>
+        ))
+      ) : (
+        <React.Fragment />
+      )}
+    </Select>
+  );
 
   let error = state["error"] ? (
     <Snackbar
@@ -79,11 +111,11 @@ export default function Root() {
     <React.Fragment>
       {error}
       {success}
-      <IconButton>
-        <ReorderIcon
-          style={{ visibility: !state["open_menu"] ? "visible" : "hidden" }}
-          onClick={() => setState({ open_menu: true })}
-        />
+      <IconButton
+        style={{ visibility: !state["open_menu"] ? "visible" : "hidden" }}
+        onClick={() => setState({ open_menu: true })}
+      >
+        <ReorderIcon />
       </IconButton>
       <Drawer anchor="left" open={state["open_menu"]}>
         <Box>
@@ -133,7 +165,7 @@ export default function Root() {
       >
         <Box sx={{ flexGrow: 1 }}>
           {state["open_new_exercise"] ? (
-            <form id="enter_exercise" action={false}>
+            <form id="enter_exercise">
               <Grid container spacing={2}>
                 <Grid item xs={6}>
                   <InputLabel>Exercise Name</InputLabel>
@@ -152,19 +184,19 @@ export default function Root() {
             <React.Fragment />
           )}
           {state["open_new_reps"] ? (
-            <form id="enter_reps" action={false}>
+            <form id="enter_reps">
               <Grid container spacing={2}>
                 <Grid item xs={6}>
                   <InputLabel>Exercise</InputLabel>
                 </Grid>
                 <Grid item xs={6}>
-                  <Input name="exercise_id" size="30em" />
+                  {exercise_list}
                 </Grid>
                 <Grid item xs={6}>
                   <InputLabel>Reps</InputLabel>
                 </Grid>
                 <Grid item xs={6}>
-                  <Input name="reps" size="30em" />
+                  <Input name="reps" size="5em" />
                 </Grid>
                 <Grid item xs={12}>
                   <Button onClick={() => submitReps(setState)}>Submit</Button>
