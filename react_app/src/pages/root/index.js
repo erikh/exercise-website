@@ -54,13 +54,22 @@ async function submitReps(setState) {
     if (response.status !== 200) {
       setState({
         error: await new Response(response.body).text(),
+        selected_exercise: obj.exercise_id,
         open_new_reps: true,
       });
     } else {
-      setState({ success: true, open_new_reps: true });
+      setState({
+        success: true,
+        open_new_reps: true,
+        selected_exercise: obj.exercise_id,
+      });
     }
   } catch (error) {
-    setState({ error: error.message, open_new_reps: true });
+    setState({
+      error: error.message,
+      open_new_reps: true,
+      selected_exercise: obj.exercise_id,
+    });
   }
 }
 
@@ -128,7 +137,14 @@ export default function Root() {
     <Snackbar
       open={true}
       autoHideDuration={5000}
-      onClose={() => setState({ error: null })}
+      onClose={() =>
+        setState({
+          open_new_reps: state["open_new_reps"],
+          open_new_exercise: state["open_new_exercise"],
+          open_menu: state["open_menu"],
+          error: null,
+        })
+      }
     >
       <Alert severity="error">{state["error"]}</Alert>
     </Snackbar>
@@ -140,7 +156,14 @@ export default function Root() {
     <Snackbar
       open={true}
       autoHideDuration={5000}
-      onClose={() => setState({ success: false })}
+      onClose={() =>
+        setState({
+          open_new_reps: state["open_new_reps"],
+          open_new_exercise: state["open_new_exercise"],
+          open_menu: state["open_menu"],
+          success: false,
+        })
+      }
     >
       <Alert>Success!</Alert>
     </Snackbar>
