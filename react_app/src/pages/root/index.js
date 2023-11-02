@@ -11,6 +11,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
 import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
@@ -24,6 +25,7 @@ async function getExercises() {
   return await fetch("/exercises").then((r) => r.json());
 }
 
+// mock for react development (the webserver isn't booted while it's up)
 async function fakegetExercises() {
   return [{ id: 1, name: "exercise #1" }];
 }
@@ -62,14 +64,22 @@ export default function Root() {
     open_new_reps: true,
     error: null,
     success: false,
+    selected_exercise: exercises.length > 0 ? exercises[0].id : 0,
   });
+
+  const changeSelect = (event) => {
+    setState({ selected_exercise: event.target.value });
+  };
+
+  console.log(exercises);
 
   let exercise_list = (
     <Select
       displayEmpty={true}
       id="exercise_id"
-      value={exercises.length > 0 ? exercises[0].id : ""}
+      value={state["selected_exercise"]}
       autoWidth={true}
+      onChange={changeSelect}
     >
       {exercises ? (
         exercises.map((e) => (
