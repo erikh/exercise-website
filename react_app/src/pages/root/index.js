@@ -68,10 +68,8 @@ export default function Root() {
   });
 
   const changeSelect = (event) => {
-    setState({ selected_exercise: event.target.value });
+    setState({ open_new_reps: true, selected_exercise: event.target.value });
   };
-
-  console.log(exercises);
 
   let exercise_list = (
     <Select
