@@ -1,4 +1,7 @@
-use crate::{db::Exercise, state::AppState};
+use crate::{
+    db::{Exercise, Reps},
+    state::AppState,
+};
 use davisjr::prelude::*;
 use include_dir::{include_dir, Dir};
 use sqlx::SqlitePool;
@@ -72,6 +75,28 @@ pub(crate) async fn post_exercise(
 
     sqlx::query("insert into exercises (name) values (?)")
         .bind(exercise.name)
+        .execute(&get_db(&app).await)
+        .await?;
+
+    Ok((
+        req,
+        Some(Response::builder().status(200).body(Body::empty()).unwrap()),
+        NoState {},
+    ))
+}
+
+pub(crate) async fn post_reps(
+    mut req: Request<Body>,
+    _resp: Option<Response<Body>>,
+    _params: Params,
+    app: App<AppState, NoState>,
+    _state: NoState,
+) -> HTTPResult<NoState> {
+    let reps: Reps = serde_json::from_slice(&hyper::body::to_bytes(req.body_mut()).await?)?;
+
+    sqlx::query("insert into reps (exercise_id, count) values (?, ?)")
+        .bind(reps.exercise_id)
+        .bind(reps.count)
         .execute(&get_db(&app).await)
         .await?;
 

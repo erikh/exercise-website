@@ -31,7 +31,37 @@ async function fakegetExercises() {
 }
 
 async function submitReps(setState) {
-  alert("Submitted Reps");
+  let obj = {};
+
+  try {
+    let form = document.getElementById("enter_reps");
+    for (var i = 0; i < form.length; i++) {
+      switch (form.elements[i].name) {
+        case "exercise_id":
+          obj.exercise_id = parseInt(form.elements[i].value);
+          break;
+        case "count":
+          obj.count = parseInt(form.elements[i].value);
+          break;
+      }
+    }
+
+    let response = await fetch("/input/reps", {
+      method: "POST",
+      body: JSON.stringify(obj),
+    });
+
+    if (response.status !== 200) {
+      setState({
+        error: await new Response(response.body).text(),
+        open_new_reps: true,
+      });
+    } else {
+      setState({ success: true, open_new_reps: true });
+    }
+  } catch (error) {
+    setState({ error: error.message, open_new_reps: true });
+  }
 }
 
 async function submitExercise(setState) {
@@ -45,13 +75,16 @@ async function submitExercise(setState) {
         });
 
         if (response.status !== 200) {
-          setState({ error: await new Response(response.body).text() });
+          setState({
+            error: await new Response(response.body).text(),
+            open_new_exercise: true,
+          });
         } else {
-          setState({ success: true });
+          setState({ success: true, open_new_exercise: true });
           exercises = await getExercises();
         }
       } catch (error) {
-        setState({ error: error.message });
+        setState({ error: error.message, open_new_exercise: true });
       }
     }
   }
@@ -74,7 +107,7 @@ export default function Root() {
   let exercise_list = (
     <Select
       displayEmpty={true}
-      id="exercise_id"
+      name="exercise_id"
       value={state["selected_exercise"]}
       autoWidth={true}
       onChange={changeSelect}
@@ -204,7 +237,7 @@ export default function Root() {
                   <InputLabel>Reps</InputLabel>
                 </Grid>
                 <Grid item xs={6}>
-                  <Input name="reps" size="5em" />
+                  <Input name="count" size="5em" />
                 </Grid>
                 <Grid item xs={12}>
                   <Button onClick={() => submitReps(setState)}>Submit</Button>

@@ -23,6 +23,7 @@ async fn main() -> Result<(), ServerError> {
         .await
         .map_err(|x| ServerError::from(format!("{}", x)))?;
     let mut app = App::with_state(state);
+    app.post("/input/reps", compose_handler!(post_reps))?;
     app.post("/input/exercise", compose_handler!(post_exercise))?;
     app.get("/exercises", compose_handler!(list_exercises))?;
     app.get("/*", compose_handler!(serve_files))?;
