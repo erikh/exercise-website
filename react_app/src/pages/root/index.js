@@ -42,6 +42,8 @@ async function submitReps(setState) {
         case "count":
           obj.count = parseInt(form.elements[i].value);
           break;
+        default:
+          break;
       }
     }
 
@@ -142,6 +144,7 @@ export default function Root() {
           open_new_exercise: state["open_new_exercise"],
           open_menu: state["open_menu"],
           error: null,
+          selected_exercise: exercises.length > 0 ? exercises[0].id : 0,
         })
       }
     >
@@ -161,6 +164,7 @@ export default function Root() {
           open_new_exercise: state["open_new_exercise"],
           open_menu: state["open_menu"],
           success: false,
+          selected_exercise: exercises.length > 0 ? exercises[0].id : 0,
         })
       }
     >
@@ -176,7 +180,12 @@ export default function Root() {
       {success}
       <IconButton
         style={{ visibility: !state["open_menu"] ? "visible" : "hidden" }}
-        onClick={() => setState({ open_menu: true })}
+        onClick={() =>
+          setState({
+            open_menu: true,
+            selected_exercise: exercises.length > 0 ? exercises[0].id : 0,
+          })
+        }
       >
         <ReorderIcon />
       </IconButton>
@@ -190,6 +199,8 @@ export default function Root() {
                     open_menu: false,
                     open_new_exercise: true,
                     open_new_reps: false,
+                    selected_exercise:
+                      exercises.length > 0 ? exercises[0].id : 0,
                   })
                 }
               >
@@ -206,6 +217,8 @@ export default function Root() {
                     open_menu: false,
                     open_new_reps: true,
                     open_new_exercise: false,
+                    selected_exercise:
+                      exercises.length > 0 ? exercises[0].id : 0,
                   })
                 }
               >
