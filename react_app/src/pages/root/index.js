@@ -20,6 +20,19 @@ import AddIcon from "@mui/icons-material/Add";
 
 let exercises = await getExercises();
 
+const stateTemplate = {
+  open_menu: false,
+  open_new_exercise: false,
+  open_new_reps: false,
+  error: null,
+  success: false,
+  selected_exercise: exercises.length > 0 ? exercises[0].id : 0,
+};
+
+function assignProperties(props) {
+  return Object.assign({}, stateTemplate, props);
+}
+
 async function getExercises() {
   return await fetch("/exercises").then((r) => r.json());
 }
@@ -53,24 +66,30 @@ async function submitReps(setState) {
     });
 
     if (response.status !== 200) {
-      setState({
-        error: await new Response(response.body).text(),
-        selected_exercise: obj.exercise_id,
-        open_new_reps: true,
-      });
+      setState(
+        assignProperties({
+          error: await new Response(response.body).text(),
+          selected_exercise: obj.exercise_id,
+          open_new_reps: true,
+        })
+      );
     } else {
-      setState({
-        success: true,
-        open_new_reps: true,
-        selected_exercise: obj.exercise_id,
-      });
+      setState(
+        assignProperties({
+          success: true,
+          open_new_reps: true,
+          selected_exercise: obj.exercise_id,
+        })
+      );
     }
   } catch (error) {
-    setState({
-      error: error.message,
-      open_new_reps: true,
-      selected_exercise: obj.exercise_id,
-    });
+    setState(
+      assignProperties({
+        error: error.message,
+        open_new_reps: true,
+        selected_exercise: obj.exercise_id,
+      })
+    );
   }
 }
 
@@ -85,33 +104,39 @@ async function submitExercise(setState) {
         });
 
         if (response.status !== 200) {
-          setState({
-            error: await new Response(response.body).text(),
-            open_new_exercise: true,
-          });
+          setState(
+            assignProperties({
+              error: await new Response(response.body).text(),
+              open_new_exercise: true,
+            })
+          );
         } else {
-          setState({ success: true, open_new_exercise: true });
+          setState(
+            assignProperties({ success: true, open_new_exercise: true })
+          );
           exercises = await getExercises();
         }
       } catch (error) {
-        setState({ error: error.message, open_new_exercise: true });
+        setState(
+          assignProperties({ error: error.message, open_new_exercise: true })
+        );
       }
     }
   }
 }
 
 export default function Root() {
-  const [state, setState] = React.useState({
-    open_menu: false,
-    open_new_exercise: false,
-    open_new_reps: true,
-    error: null,
-    success: false,
-    selected_exercise: exercises.length > 0 ? exercises[0].id : 0,
-  });
+  const [state, setState] = React.useState(
+    assignProperties({ open_new_reps: true })
+  );
 
   const changeSelect = (event) => {
-    setState({ open_new_reps: true, selected_exercise: event.target.value });
+    setState(
+      assignProperties({
+        open_new_reps: true,
+        selected_exercise: event.target.value,
+      })
+    );
   };
 
   let exercise_list = (
@@ -139,13 +164,15 @@ export default function Root() {
       open={true}
       autoHideDuration={5000}
       onClose={() =>
-        setState({
-          open_new_reps: state["open_new_reps"],
-          open_new_exercise: state["open_new_exercise"],
-          open_menu: state["open_menu"],
-          error: null,
-          selected_exercise: exercises.length > 0 ? exercises[0].id : 0,
-        })
+        setState(
+          assignProperties({
+            open_new_reps: state["open_new_reps"],
+            open_new_exercise: state["open_new_exercise"],
+            open_menu: state["open_menu"],
+            error: null,
+            selected_exercise: exercises.length > 0 ? exercises[0].id : 0,
+          })
+        )
       }
     >
       <Alert severity="error">{state["error"]}</Alert>
@@ -159,13 +186,15 @@ export default function Root() {
       open={true}
       autoHideDuration={5000}
       onClose={() =>
-        setState({
-          open_new_reps: state["open_new_reps"],
-          open_new_exercise: state["open_new_exercise"],
-          open_menu: state["open_menu"],
-          success: false,
-          selected_exercise: exercises.length > 0 ? exercises[0].id : 0,
-        })
+        setState(
+          assignProperties({
+            open_new_reps: state["open_new_reps"],
+            open_new_exercise: state["open_new_exercise"],
+            open_menu: state["open_menu"],
+            success: false,
+            selected_exercise: exercises.length > 0 ? exercises[0].id : 0,
+          })
+        )
       }
     >
       <Alert>Success!</Alert>
@@ -181,10 +210,12 @@ export default function Root() {
       <IconButton
         style={{ visibility: !state["open_menu"] ? "visible" : "hidden" }}
         onClick={() =>
-          setState({
-            open_menu: true,
-            selected_exercise: exercises.length > 0 ? exercises[0].id : 0,
-          })
+          setState(
+            assignProperties({
+              open_menu: true,
+              selected_exercise: exercises.length > 0 ? exercises[0].id : 0,
+            })
+          )
         }
       >
         <ReorderIcon />
@@ -195,13 +226,15 @@ export default function Root() {
             <ListItem>
               <ListItemButton
                 onClick={() =>
-                  setState({
-                    open_menu: false,
-                    open_new_exercise: true,
-                    open_new_reps: false,
-                    selected_exercise:
-                      exercises.length > 0 ? exercises[0].id : 0,
-                  })
+                  setState(
+                    assignProperties({
+                      open_menu: false,
+                      open_new_exercise: true,
+                      open_new_reps: false,
+                      selected_exercise:
+                        exercises.length > 0 ? exercises[0].id : 0,
+                    })
+                  )
                 }
               >
                 <ListItemIcon>
@@ -213,13 +246,15 @@ export default function Root() {
             <ListItem>
               <ListItemButton
                 onClick={() =>
-                  setState({
-                    open_menu: false,
-                    open_new_reps: true,
-                    open_new_exercise: false,
-                    selected_exercise:
-                      exercises.length > 0 ? exercises[0].id : 0,
-                  })
+                  setState(
+                    assignProperties({
+                      open_menu: false,
+                      open_new_reps: true,
+                      open_new_exercise: false,
+                      selected_exercise:
+                        exercises.length > 0 ? exercises[0].id : 0,
+                    })
+                  )
                 }
               >
                 <ListItemIcon>
