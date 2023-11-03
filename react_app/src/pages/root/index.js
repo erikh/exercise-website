@@ -33,7 +33,7 @@ const stateTemplate = {
   selected_exercise: exercises.length > 0 ? exercises[0].id : 0,
 };
 
-function assignProperties(props) {
+function assignProperties(stateTemplate, props) {
   return Object.assign({}, stateTemplate, props);
 }
 
@@ -62,7 +62,7 @@ async function submitReps(setState) {
 
     if (response.status !== 200) {
       setState(
-        assignProperties({
+        assignProperties(stateTemplate, {
           error: await new Response(response.body).text(),
           selected_exercise: obj.exercise_id,
           open_new_reps: true,
@@ -70,7 +70,7 @@ async function submitReps(setState) {
       );
     } else {
       setState(
-        assignProperties({
+        assignProperties(stateTemplate, {
           success: true,
           open_new_reps: true,
           selected_exercise: obj.exercise_id,
@@ -79,7 +79,7 @@ async function submitReps(setState) {
     }
   } catch (error) {
     setState(
-      assignProperties({
+      assignProperties(stateTemplate, {
         error: error.message,
         open_new_reps: true,
         selected_exercise: obj.exercise_id,
@@ -100,20 +100,26 @@ async function submitExercise(setState) {
 
         if (response.status !== 200) {
           setState(
-            assignProperties({
+            assignProperties(stateTemplate, {
               error: await new Response(response.body).text(),
               open_new_exercise: true,
             })
           );
         } else {
           setState(
-            assignProperties({ success: true, open_new_exercise: true })
+            assignProperties(stateTemplate, {
+              success: true,
+              open_new_exercise: true,
+            })
           );
           exercises = await getExercises();
         }
       } catch (error) {
         setState(
-          assignProperties({ error: error.message, open_new_exercise: true })
+          assignProperties(stateTemplate, {
+            error: error.message,
+            open_new_exercise: true,
+          })
         );
       }
     }
@@ -122,12 +128,12 @@ async function submitExercise(setState) {
 
 export default function Root() {
   const [state, setState] = React.useState(
-    assignProperties({ open_new_reps: true })
+    assignProperties(stateTemplate, { open_new_reps: true })
   );
 
   const changeSelect = (event) => {
     setState(
-      assignProperties({
+      assignProperties(stateTemplate, {
         open_new_reps: true,
         selected_exercise: event.target.value,
       })
@@ -160,7 +166,7 @@ export default function Root() {
       autoHideDuration={5000}
       onClose={() =>
         setState(
-          assignProperties({
+          assignProperties(stateTemplate, {
             open_new_reps: state["open_new_reps"],
             open_new_exercise: state["open_new_exercise"],
             open_menu: state["open_menu"],
@@ -182,7 +188,7 @@ export default function Root() {
       autoHideDuration={5000}
       onClose={() =>
         setState(
-          assignProperties({
+          assignProperties(stateTemplate, {
             open_new_reps: state["open_new_reps"],
             open_new_exercise: state["open_new_exercise"],
             open_menu: state["open_menu"],
@@ -206,7 +212,7 @@ export default function Root() {
         style={{ visibility: !state["open_menu"] ? "visible" : "hidden" }}
         onClick={() =>
           setState(
-            assignProperties({
+            assignProperties(stateTemplate, {
               open_menu: true,
               selected_exercise: exercises.length > 0 ? exercises[0].id : 0,
             })
@@ -222,7 +228,7 @@ export default function Root() {
               <ListItemButton
                 onClick={() =>
                   setState(
-                    assignProperties({
+                    assignProperties(stateTemplate, {
                       open_menu: false,
                       open_new_exercise: true,
                       open_new_reps: false,
@@ -242,7 +248,7 @@ export default function Root() {
               <ListItemButton
                 onClick={() =>
                   setState(
-                    assignProperties({
+                    assignProperties(stateTemplate, {
                       open_menu: false,
                       open_new_reps: true,
                       open_new_exercise: false,
