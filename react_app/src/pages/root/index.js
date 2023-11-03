@@ -22,6 +22,8 @@ import { getExercises } from "../../lib/fetches";
 // see the comments in lib/mock_fetches/index.js for more information.
 // import { getExercises } from "../../lib/mock_fetches";
 
+import { assignProperties } from "../../lib/utils";
+
 let exercises = await getExercises();
 
 const stateTemplate = {
@@ -32,10 +34,6 @@ const stateTemplate = {
   success: false,
   selected_exercise: exercises.length > 0 ? exercises[0].id : 0,
 };
-
-function assignProperties(stateTemplate, props) {
-  return Object.assign({}, stateTemplate, props);
-}
 
 async function submitReps(setState) {
   let obj = {};
