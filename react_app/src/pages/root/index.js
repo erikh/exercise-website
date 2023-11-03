@@ -18,6 +18,10 @@ import Select from "@mui/material/Select";
 import ReorderIcon from "@mui/icons-material/Reorder";
 import AddIcon from "@mui/icons-material/Add";
 
+import { getExercises } from "../../lib/fetches";
+// see the comments in lib/mock_fetches/index.js for more information.
+// import { getExercises } from "../../lib/mock_fetches";
+
 let exercises = await getExercises();
 
 const stateTemplate = {
@@ -31,15 +35,6 @@ const stateTemplate = {
 
 function assignProperties(props) {
   return Object.assign({}, stateTemplate, props);
-}
-
-async function getExercises() {
-  return await fetch("/exercises").then((r) => r.json());
-}
-
-// mock for react development (the webserver isn't booted while it's up)
-async function fakegetExercises() {
-  return [{ id: 1, name: "exercise #1" }];
 }
 
 async function submitReps(setState) {
