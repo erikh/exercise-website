@@ -22,7 +22,7 @@ import { getExercises } from "../../lib/fetches";
 // see the comments in lib/mock_fetches/index.js for more information.
 // import { getExercises } from "../../lib/mock_fetches";
 
-import { assignProperties } from "../../lib/utils";
+import { assignProperties, submitForm } from "../../lib/utils";
 
 let exercises = await getExercises();
 
@@ -36,92 +36,57 @@ const stateTemplate = {
 };
 
 async function submitReps(setState) {
-  let obj = {};
-
-  try {
-    let form = document.getElementById("enter_reps");
-    for (var i = 0; i < form.length; i++) {
-      switch (form.elements[i].name) {
+  submitForm(
+    "enter_reps",
+    "/input/reps",
+    stateTemplate,
+    setState,
+    (obj) => ({
+      selected_exercise: obj.exercise_id,
+      open_new_reps: true,
+    }),
+    (element, obj) => {
+      switch (element.name) {
         case "exercise_id":
-          obj.exercise_id = parseInt(form.elements[i].value);
+          obj.exercise_id = parseInt(element.value);
           break;
         case "count":
-          obj.count = parseInt(form.elements[i].value);
+          obj.count = parseInt(element.value);
           break;
         default:
           break;
       }
-    }
 
-    let response = await fetch("/input/reps", {
-      method: "POST",
-      body: JSON.stringify(obj),
-    });
-
-    if (response.status !== 200) {
-      setState(
-        assignProperties(stateTemplate, {
-          error: await new Response(response.body).text(),
-          selected_exercise: obj.exercise_id,
-          open_new_reps: true,
-        })
-      );
-    } else {
-      setState(
-        assignProperties(stateTemplate, {
-          success: true,
-          open_new_reps: true,
-          selected_exercise: obj.exercise_id,
-        })
-      );
-    }
-  } catch (error) {
-    setState(
-      assignProperties(stateTemplate, {
-        error: error.message,
-        open_new_reps: true,
-        selected_exercise: obj.exercise_id,
-      })
-    );
-  }
+      return obj;
+    },
+    null
+  );
 }
 
 async function submitExercise(setState) {
-  let form = document.getElementById("enter_exercise");
-  for (var i = 0; i < form.length; i++) {
-    if (form.elements[i].name === "name") {
-      try {
-        let response = await fetch("/input/exercise", {
-          method: "POST",
-          body: JSON.stringify({ name: form.elements[i].value }),
-        });
-
-        if (response.status !== 200) {
-          setState(
-            assignProperties(stateTemplate, {
-              error: await new Response(response.body).text(),
-              open_new_exercise: true,
-            })
-          );
-        } else {
-          setState(
-            assignProperties(stateTemplate, {
-              success: true,
-              open_new_exercise: true,
-            })
-          );
-          exercises = await getExercises();
-        }
-      } catch (error) {
-        setState(
-          assignProperties(stateTemplate, {
-            error: error.message,
-            open_new_exercise: true,
-          })
-        );
+  submitForm(
+    "enter_exercise",
+    "/input/exercise",
+    stateTemplate,
+    setState,
+    (obj) => ({
+      open_new_reps: true,
+    }),
+    (element, obj) => {
+      switch (element.name) {
+        case "name":
+          obj.name = element.value;
+          break;
+        default:
+          break;
       }
+
+      return obj;
+    },
+    async () => {
+      exercises = await getExercises();
     }
-  }
+  );
 }
 
 export default function Root() {

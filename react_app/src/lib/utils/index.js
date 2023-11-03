@@ -10,15 +10,17 @@ export function assignProperties(stateTemplate, props) {
 // - route is the path to the POST endpoint
 // - stateTemplate is a starter set of state which will be merged by
 //   assignProperties.
-// - addlProps is an additional set of static properties to merge with state
-//   after the request has been completed.
 // - setState is react's state modification function passed in for use by this
 //   call.
+// - addlPropsFunc is an additional set of properties to merge with
+//   state after the request has been completed. It is passed the request
+//   object in its final form.
 // - transformFunc is a custom function that takes a form element and starter
 //   object. It returns an object which replaces the existing object passed to
 //   it. This function will be called for every form element in a loop.
-// - postRequestFunc is a function that will be called if the request completes
-//   successfully, regardless of its status. It takes no parameters.
+// - postRequestFunc is an async function that will be called if the request completes
+//   successfully, regardless of its status. It takes no parameters and no
+//   return values are expected. If null is passed, nothing will be called.
 //
 // Additional states will be added based on the result of the request.
 // `success` will be set to true if the request was successful. If there is an
@@ -29,12 +31,13 @@ export async function submitForm(
   name,
   route,
   stateTemplate,
-  addlProps,
   setState,
+  addlPropsFunc,
   transformFunc,
   postRequestFunc
 ) {
   let obj = {};
+
   try {
     let form = document.getElementById(name);
 
@@ -51,7 +54,7 @@ export async function submitForm(
       setState(
         assignProperties(
           stateTemplate,
-          assignProperties(addlProps, {
+          assignProperties(addlPropsFunc(obj), {
             error: await new Response(response.body).text(),
           })
         )
@@ -60,19 +63,21 @@ export async function submitForm(
       setState(
         assignProperties(
           stateTemplate,
-          assignProperties(addlProps, {
+          assignProperties(addlPropsFunc(obj), {
             success: true,
           })
         )
       );
     }
 
-    postRequestFunc();
+    if (postRequestFunc) {
+      await postRequestFunc();
+    }
   } catch (error) {
     setState(
       assignProperties(
         stateTemplate,
-        assignProperties(addlProps, {
+        assignProperties(addlPropsFunc(obj), {
           error: error.message,
         })
       )
