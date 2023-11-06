@@ -8,7 +8,7 @@ edition = "2021"
 [dependencies]
 dotenv = "*"
 davisjr = { version = "*", features = ["tracing"] }
-sqlx = { version = "*", features = [ "runtime-tokio-rustls", "sqlite", "macros", "uuid", "time", "bigdecimal", "tls" ] }
+sqlx = { version = "*", features = [ "runtime-tokio-rustls", "sqlite", "macros", "uuid", "time", "bigdecimal", "tls", "chrono" ] }
 tokio = { version = "*", features = [ "full" ] }
 include_dir = "*"
 tracing = "*"

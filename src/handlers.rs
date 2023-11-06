@@ -106,3 +106,28 @@ pub(crate) async fn post_reps(
         NoState {},
     ))
 }
+
+pub(crate) async fn exercise_log(
+    req: Request<Body>,
+    _resp: Option<Response<Body>>,
+    _params: Params,
+    app: App<AppState, NoState>,
+    _state: NoState,
+) -> HTTPResult<NoState> {
+    let reps: Vec<Reps> = sqlx::query_as("select * from reps order by date DESC")
+        .fetch_all(&get_db(&app).await)
+        .await?;
+
+    let body = serde_json::to_string(&reps)?;
+
+    Ok((
+        req,
+        Some(
+            Response::builder()
+                .status(200)
+                .body(Body::from(hyper::body::to_bytes(body).await?))
+                .unwrap(),
+        ),
+        NoState {},
+    ))
+}

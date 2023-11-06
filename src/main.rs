@@ -26,6 +26,7 @@ async fn main() -> Result<(), ServerError> {
     app.post("/input/reps", compose_handler!(post_reps))?;
     app.post("/input/exercise", compose_handler!(post_exercise))?;
     app.get("/exercises", compose_handler!(list_exercises))?;
+    app.get("/log", compose_handler!(exercise_log))?;
     app.get("/*", compose_handler!(serve_files))?;
     app.serve("0.0.0.0:3000").await
 }
