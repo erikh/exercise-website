@@ -18,9 +18,11 @@ import Select from "@mui/material/Select";
 import ReorderIcon from "@mui/icons-material/Reorder";
 import AddIcon from "@mui/icons-material/Add";
 
-import { getExercises, getLog } from "../../lib/fetches";
+import ExerciseLog from "../../components/exercise_log";
+
+import { getExercises } from "../../lib/fetches";
 // see the comments in lib/mock_fetches/index.js for more information.
-// import { getExercises, getLog } from "../../lib/mock_fetches";
+// import { getExercises } from "../../lib/mock_fetches";
 
 import { assignProperties, submitForm } from "../../lib/utils";
 
@@ -218,7 +220,6 @@ export default function Root() {
                 <ListItemText primary="New Reps" />
               </ListItemButton>
             </ListItem>
-            <span>here</span>
             <ListItem>
               <ListItemButton
                 onClick={() =>
@@ -289,7 +290,7 @@ export default function Root() {
           ) : (
             <React.Fragment />
           )}
-          {state["open_log"] ? <React.Fragment /> : <React.Fragment />}
+          {state["open_log"] ? <ExerciseLog /> : <React.Fragment />}
         </Box>
       </div>
     </React.Fragment>

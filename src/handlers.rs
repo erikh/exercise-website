@@ -1,5 +1,5 @@
 use crate::{
-    db::{Exercise, Reps},
+    db::{Exercise, LogItem, Reps},
     state::AppState,
 };
 use davisjr::prelude::*;
@@ -114,11 +114,19 @@ pub(crate) async fn exercise_log(
     app: App<AppState, NoState>,
     _state: NoState,
 ) -> HTTPResult<NoState> {
-    let reps: Vec<Reps> = sqlx::query_as("select * from reps order by date DESC")
-        .fetch_all(&get_db(&app).await)
-        .await?;
+    let items: Vec<LogItem> = sqlx::query_as(
+        "
+        select e.name as name, r.count as count, r.date as date
+        from reps r 
+        inner join exercises e 
+            where e.id = r.exercise_id 
+        order by date DESC
+        ",
+    )
+    .fetch_all(&get_db(&app).await)
+    .await?;
 
-    let body = serde_json::to_string(&reps)?;
+    let body = serde_json::to_string(&items)?;
 
     Ok((
         req,

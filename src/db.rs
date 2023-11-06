@@ -14,3 +14,10 @@ pub(crate) struct Reps {
     pub(crate) count: u32,
     pub(crate) date: Option<chrono::DateTime<chrono::Local>>,
 }
+
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub(crate) struct LogItem {
+    pub(crate) name: String,
+    pub(crate) count: u32,
+    pub(crate) date: chrono::DateTime<chrono::Local>,
+}
