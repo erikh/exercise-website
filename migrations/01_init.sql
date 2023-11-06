@@ -9,10 +9,3 @@ CREATE TABLE reps (
   count integer not null,
   date datetime not null default CURRENT_TIMESTAMP
 );
-
-CREATE TABLE done (
-  exercise_id integer not null,
-  reps_id integer not null,
-  count integer not null,
-  date datetime not null default CURRENT_TIMESTAMP
-);
