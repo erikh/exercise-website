@@ -4,3 +4,7 @@
 export async function getExercises() {
   return [{ id: 1, name: "exercise #1" }];
 }
+
+export async function getLog() {
+  return [{ id: 1, exercise: "exercise #1", reps: 20, date: new Date() }];
+}

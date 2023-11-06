@@ -18,9 +18,9 @@ import Select from "@mui/material/Select";
 import ReorderIcon from "@mui/icons-material/Reorder";
 import AddIcon from "@mui/icons-material/Add";
 
-import { getExercises } from "../../lib/fetches";
+import { getExercises, getLog } from "../../lib/fetches";
 // see the comments in lib/mock_fetches/index.js for more information.
-// import { getExercises } from "../../lib/mock_fetches";
+// import { getExercises, getLog } from "../../lib/mock_fetches";
 
 import { assignProperties, submitForm } from "../../lib/utils";
 
@@ -30,6 +30,7 @@ const stateTemplate = {
   open_menu: false,
   open_new_exercise: false,
   open_new_reps: false,
+  open_log: false,
   error: null,
   success: false,
   selected_exercise: exercises.length > 0 ? exercises[0].id : 0,
@@ -177,6 +178,7 @@ export default function Root() {
           setState(
             assignProperties(stateTemplate, {
               open_menu: true,
+              open_new_reps: false,
               selected_exercise: exercises.length > 0 ? exercises[0].id : 0,
             })
           )
@@ -192,7 +194,6 @@ export default function Root() {
                 onClick={() =>
                   setState(
                     assignProperties(stateTemplate, {
-                      open_menu: false,
                       open_new_exercise: true,
                       open_new_reps: false,
                       selected_exercise:
@@ -209,22 +210,29 @@ export default function Root() {
             </ListItem>
             <ListItem>
               <ListItemButton
-                onClick={() =>
-                  setState(
-                    assignProperties(stateTemplate, {
-                      open_menu: false,
-                      open_new_reps: true,
-                      open_new_exercise: false,
-                      selected_exercise:
-                        exercises.length > 0 ? exercises[0].id : 0,
-                    })
-                  )
-                }
+                onClick={() => setState(assignProperties(stateTemplate, {}))}
               >
                 <ListItemIcon>
                   <AddIcon />
                 </ListItemIcon>
                 <ListItemText primary="New Reps" />
+              </ListItemButton>
+            </ListItem>
+            <span>here</span>
+            <ListItem>
+              <ListItemButton
+                onClick={() =>
+                  setState(
+                    assignProperties(stateTemplate, {
+                      open_log: true,
+                    })
+                  )
+                }
+              >
+                <ListItemIcon>
+                  <ReorderIcon />
+                </ListItemIcon>
+                <ListItemText primary="Exercise Log" />
               </ListItemButton>
             </ListItem>
           </List>
@@ -281,6 +289,7 @@ export default function Root() {
           ) : (
             <React.Fragment />
           )}
+          {state["open_log"] ? <React.Fragment /> : <React.Fragment />}
         </Box>
       </div>
     </React.Fragment>
