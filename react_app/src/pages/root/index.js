@@ -212,7 +212,11 @@ export default function Root() {
             </ListItem>
             <ListItem>
               <ListItemButton
-                onClick={() => setState(assignProperties(stateTemplate, {}))}
+                onClick={() =>
+                  setState(
+                    assignProperties(stateTemplate, { open_new_reps: true })
+                  )
+                }
               >
                 <ListItemIcon>
                   <AddIcon />
@@ -239,15 +243,8 @@ export default function Root() {
           </List>
         </Box>
       </Drawer>
-      <div
-        style={{
-          marginTop: "25%",
-          marginBottom: "25%",
-          marginLeft: "25%",
-          marginRight: "25%",
-        }}
-      >
-        <Box sx={{ flexGrow: 1 }}>
+      <Grid container>
+        <Grid item xs={8} style={{ marginLeft: "auto", marginRight: "auto" }}>
           {state["open_new_exercise"] ? (
             <form id="enter_exercise">
               <Grid container spacing={2}>
@@ -291,8 +288,8 @@ export default function Root() {
             <React.Fragment />
           )}
           {state["open_log"] ? <ExerciseLog /> : <React.Fragment />}
-        </Box>
-      </div>
+        </Grid>
+      </Grid>
     </React.Fragment>
   );
 }
