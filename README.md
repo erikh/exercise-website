@@ -6,6 +6,10 @@ This uses [davisjr](https://github.com/erikh/davisjr) to serve a
 binary-embedded react application which posts to a database. It could serve as
 an example application for that toolkit.
 
+The resulting binary is approximately 7MB with the current release build
+settings and only links against libc. It requires no other infrastructure to
+function as a web application.
+
 ### Development
 
 First off, make sure your node environment is in order. `cd react_app && npm i`
