@@ -6,3 +6,6 @@ react:
 
 clean:
 	rm -f exercise.db*
+
+docker: react
+	docker build -t exercise-website .

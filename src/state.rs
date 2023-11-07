@@ -14,9 +14,7 @@ pub(crate) struct AppState {
 impl AppState {
     pub(crate) async fn new(db: &str) -> Result<Self> {
         let url = format!("sqlite://{}", db);
-        match Sqlite::create_database(&url).await {
-            _ => {}
-        }
+        let _ = Sqlite::create_database(&url).await;
 
         let db = SqlitePool::connect(&url).await?;
         sqlx::migrate::Migrator::new(Migrations(DB_MIGRATIONS.clone()))

@@ -31,6 +31,12 @@ that in all cases where a filename does not match, it is forwarded to
 `/index.html` with the target path appended to it. This way, `react-router` can
 route the path with javascript.
 
+### Deployment
+
+`make docker` will build the react application and then build a local docker
+image called `exercise-website`. It uses the rust image as a build stage and
+then copies the assets into a thinner image.
+
 ### Author
 
 Erik Hollensbe <erik+github@hollensbe.org>

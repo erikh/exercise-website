@@ -22,27 +22,17 @@ impl<'s> MigrationSource<'s> for Migrations<'s> {
 
             let filenames =
                 s.0.files()
-                    .map(|x| {
-                        x.path()
-                            .as_os_str()
-                            .clone()
-                            .to_str()
-                            .unwrap()
-                            .to_string()
-                            .clone()
-                    })
+                    .map(|x| x.path().as_os_str().to_str().unwrap().to_string().clone())
                     .collect::<Vec<String>>();
 
             let mut v = Vec::new();
-            let mut i: usize = 0;
-            for s in contents {
+            for (i, s) in contents.iter().enumerate() {
                 v.push(sqlx::migrate::Migration::new(
                     i.try_into().unwrap(),
                     Cow::Owned(filenames[i].clone()),
                     MigrationType::Simple,
                     Cow::Owned(s.clone()),
                 ));
-                i += 1;
             }
             Ok(v)
         })
